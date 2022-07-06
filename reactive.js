@@ -3,7 +3,7 @@ class Reactive {
 
   dom;
 
-  vDom;
+  domCopy;
 
   listeners = [];
 
@@ -18,7 +18,7 @@ class Reactive {
 
     this.functions = functions;
 
-    this.createVDom();
+    this.createDomCopy();
 
     this.render();
 
@@ -41,20 +41,20 @@ class Reactive {
     }
   }
 
-  emit(event) {
+  emit(event, payload = null) {
     for (const listener of this.listeners) {
       if (listener.event === event) {
-        listener.callback && listener.callback(this);
+        listener.callback && listener.callback(payload);
       }
     }
   }
 
-  createVDom() {
-    this.vDom = this.dom.cloneNode("deep");
+  createDomCopy() {
+    this.domCopy = this.dom.cloneNode("deep");
   }
 
   render() {
-    this.dom.innerHTML = replaceHtml(this.vDom.innerHTML, this.state);
+    this.dom.innerHTML = replaceHtml(this.domCopy.innerHTML, this.state);
     this.addListeners();
   }
 

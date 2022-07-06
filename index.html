@@ -50,10 +50,17 @@
             }
         })
 
-        instance.on('mount', (reactive) => {
-            console.log('mount')
-            reactive.setState({ msg: 'new message' })
+        instance.on('mount', () => {
+            instance.setState({ msg: 'onMount' })
         })
+
+        instance.on('say-hello', (payload) => {
+            instance.setState({ msg: 'Hello after 3 seconds ' + payload })
+        })
+
+        setTimeout(() => {
+            instance.emit('say-hello', 'jack')
+        }, 3000)
     </script>
 </body>
 </html>
