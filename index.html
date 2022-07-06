@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        main {
+            height: 100vh;
+            width: 100%;
+        }
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <main id="app">
+        <div class="container">
+            <div>
+                { msg }
+            </div>
+            <button on-click="runThis">click</button>
+            <div on-mouseover="hover">Hover Me!</div>
+        </div>
+    </main>
+    <script src="./reactive.js"></script>
+    <script>
+        const instance = new Reactive({
+            el: '#app',
+            data: {
+                msg: 'Hello'
+            },
+            functions: {
+                runThis: function() {
+                    instance.setState({ msg: 'changed' })
+                },
+                hover: function() {
+                    document.querySelector('main').style = 'background-color: #000'
+                }
+            }
+        })
+
+        instance.on('mount', (reactive) => {
+            console.log('mount')
+            reactive.setState({ msg: 'new message' })
+        })
+    </script>
+</body>
+</html>
