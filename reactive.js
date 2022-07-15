@@ -20,9 +20,7 @@ class Reactive {
 
     this.registerListeners();
 
-    window.addEventListener("load", () => {
-      this.emit("mount");
-    });
+    this.emit("mount");
 
     return this;
   }
