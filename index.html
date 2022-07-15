@@ -26,11 +26,11 @@
 <body>
     <main id="app">
         <div class="container">
-            <div>
-                { msg }
+            <div r-text="msg">
             </div>
-            <button on-click="toggle">click</button>
-            <div on-mouseover="hover">Hover Me!</div>
+            <input @focus="toggle" @blur="toggle" placeholder="focus on me"/>
+            <button @click="toggle">click</button>
+            <div @mouseover="hover" r-text="hovered"></div>
         </div>
     </main>
     <script src="./reactive.js"></script>
@@ -38,14 +38,17 @@
         const instance = new Reactive({
             el: '#app',
             data: {
-                msg: 'Hello'
+                msg: 'Hello',
+                hovered: 'hover me!'
             },
             functions: {
-                toggle: function() {
-                    instance.setState({ msg: instance.state.msg === 'changed' ? 'foo' : 'changed' })
+                toggle: () => {
+                    instance.setState({
+                        msg: instance.state.msg === 'changed' ? 'foo' : 'changed',
+                    })
                 },
-                hover: function() {
-                    document.querySelector('main').style = 'background-color: #000'
+                hover: () => {
+                    instance.setState({ hovered: 'Hovered' })
                 }
             }
         })

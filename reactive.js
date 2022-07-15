@@ -3,26 +3,22 @@ class Reactive {
 
   dom;
 
-  domCopy;
-
   listeners = [];
 
-  nativeListeners = ["click", "mouseover"]; // on-click
+  nativeListeners = ["click", "mouseover", "focus", "blur"]; // @click
 
   functions = {};
 
   constructor({ el, data = {}, functions = {} }) {
     this.dom = document.querySelector(el);
 
-    this.state = data;
+    this.state = observe(data, () => this.render());
 
     this.functions = functions;
 
-    this.createDomCopy();
-
     this.render();
 
-    this.addListeners();
+    this.registerListeners();
 
     window.addEventListener("load", () => {
       this.emit("mount");
@@ -31,18 +27,18 @@ class Reactive {
     return this;
   }
 
-  addListeners() {
-    for (const event of this.nativeListeners) {
-      this.dom.addEventListener(event, (e) => {
-        if (e.target.hasAttribute(`on-${event}`)) {
-          console.log("clicked");
-          const func = e.target.getAttribute(`on-${event}`);
-          if (func in this.functions) {
-            this.functions[func]();
-          }
-        }
-      });
-    }
+  registerListeners() {
+    walkDom(this.dom, (el) => {
+      for (const event of this.nativeListeners) {
+        if (!el.hasAttribute(`@${event}`)) continue;
+
+        const func = el.getAttribute(`@${event}`);
+
+        if (!this.functions.hasOwnProperty(func)) continue;
+
+        el.addEventListener(event, this.functions[func]);
+      }
+    });
   }
 
   emit(event, payload = null) {
@@ -53,20 +49,24 @@ class Reactive {
     }
   }
 
-  createDomCopy() {
-    this.domCopy = this.dom.cloneNode("deep");
-  }
-
   render() {
-    this.dom.innerHTML = replaceHtml(this.domCopy.innerHTML, this.state);
+    walkDom(this.dom, (el) => {
+      if (el.hasAttribute("r-text")) {
+        const expression = el.getAttribute("r-text");
+        if (!this.state[expression]) return;
+        el.innerText = this.state[expression];
+      }
+    });
   }
 
   setState(payload) {
-    this.state = {
-      ...this.state,
-      ...payload,
-    };
-    setTimeout(() => this.render());
+    for (const key in payload) {
+      if (!this.state.hasOwnProperty(key)) {
+        console.error(`${key} does not exist in state!`);
+        continue;
+      }
+      this.state[key] = payload[key];
+    }
   }
 
   on(event, callback) {
@@ -78,9 +78,29 @@ class Reactive {
       },
     ];
   }
+
+  destroy() {
+    this.emit("onDestroy");
+  }
 }
 
-function replaceHtml(template, data) {
-  const pattern = /{\s*(\w+?)\s*}/g; // {property}
-  return template.replace(pattern, (_, token) => data[token] || "");
+function walkDom(el, callback) {
+  callback(el);
+
+  el = el.firstElementChild;
+
+  while (el) {
+    walkDom(el, callback);
+    el = el.nextElementSibling;
+  }
+}
+
+function observe(data, callback = () => {}) {
+  return new Proxy(data, {
+    set(target, key, value) {
+      target[key] = value;
+      callback();
+      return true;
+    },
+  });
 }
