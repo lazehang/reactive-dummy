@@ -29,7 +29,7 @@
             <div>
                 { msg }
             </div>
-            <button on-click="runThis">click</button>
+            <button on-click="toggle">click</button>
             <div on-mouseover="hover">Hover Me!</div>
         </div>
     </main>
@@ -41,8 +41,8 @@
                 msg: 'Hello'
             },
             functions: {
-                runThis: function() {
-                    instance.setState({ msg: 'changed' })
+                toggle: function() {
+                    instance.setState({ msg: instance.state.msg === 'changed' ? 'foo' : 'changed' })
                 },
                 hover: function() {
                     document.querySelector('main').style = 'background-color: #000'

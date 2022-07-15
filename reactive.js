@@ -7,7 +7,7 @@ class Reactive {
 
   listeners = [];
 
-  nativeListeners = ["click", "mouseover"];
+  nativeListeners = ["click", "mouseover"]; // on-click
 
   functions = {};
 
@@ -22,6 +22,8 @@ class Reactive {
 
     this.render();
 
+    this.addListeners();
+
     window.addEventListener("load", () => {
       this.emit("mount");
     });
@@ -31,11 +33,13 @@ class Reactive {
 
   addListeners() {
     for (const event of this.nativeListeners) {
-      const nodes = this.dom.querySelectorAll(`[on-${event}]`);
-      [...nodes].forEach((el) => {
-        const func = el.attributes[`on-${event}`].nodeValue;
-        if (func in this.functions) {
-          el.addEventListener(event, this.functions[func]);
+      this.dom.addEventListener(event, (e) => {
+        if (e.target.hasAttribute(`on-${event}`)) {
+          console.log("clicked");
+          const func = e.target.getAttribute(`on-${event}`);
+          if (func in this.functions) {
+            this.functions[func]();
+          }
         }
       });
     }
@@ -55,7 +59,6 @@ class Reactive {
 
   render() {
     this.dom.innerHTML = replaceHtml(this.domCopy.innerHTML, this.state);
-    this.addListeners();
   }
 
   setState(payload) {
@@ -63,7 +66,7 @@ class Reactive {
       ...this.state,
       ...payload,
     };
-    this.render();
+    setTimeout(() => this.render());
   }
 
   on(event, callback) {
