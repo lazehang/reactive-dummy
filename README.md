@@ -1,6 +1,8 @@
 # Making html reactive with basic dom manipulation
 Just taking a naive attempt on trying to learn how reactivity works.
 
+[Demo](https://lazehang.github.io/reactive-dummy/)
+
 ## Getting Started
 Import script
 ```js
