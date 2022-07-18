@@ -38,6 +38,8 @@ Initialize Reactive Instance
 ##  Directives
 - `r-text`
 
-## Events
+## Native Events
 - `@click`
 - `@mouseover`
+- `@focus`
+- `@blur`
