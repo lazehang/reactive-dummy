@@ -1,4 +1,5 @@
 # Making html reactive with basic dom manipulation
+Just taking a naive attempt on trying to learn how reactivity works.
 
 ## Getting Started
 Import script
